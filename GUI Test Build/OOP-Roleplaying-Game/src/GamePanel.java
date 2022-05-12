@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Random;
+import javax.swing.JFrame;
 
 public class GamePanel extends JPanel implements ActionListener {
 
@@ -20,6 +21,8 @@ public class GamePanel extends JPanel implements ActionListener {
     Timer timer;
     Random random;
 
+    int encounterY, encounterX;
+
     GamePanel() {
         random = new Random();
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
@@ -30,6 +33,7 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void startGame() {
+        generateEncounter();
         running = true;
         timer = new Timer(DELAY, this);
         timer.start();
@@ -40,9 +44,16 @@ public class GamePanel extends JPanel implements ActionListener {
         if(running){
             move();
             collisionCheck();
+            try {
+                checkEncounter();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         repaint();
     }
+
+
 
     public void move(){
         switch(direction){
@@ -77,6 +88,8 @@ public class GamePanel extends JPanel implements ActionListener {
                 g.drawLine(0, i * UNIT_SIZE, SCREEN_WIDTH, i * UNIT_SIZE);
             }
         }
+        g.setColor(Color.blue);
+        g.fillOval(encounterX, encounterY, UNIT_SIZE, UNIT_SIZE);
 
         //this sets te color for the placeholder player, since we don't have a sprite yet
         g.setColor(Color.red);
@@ -87,36 +100,45 @@ public class GamePanel extends JPanel implements ActionListener {
         @Override
         public void keyPressed(KeyEvent e){
             switch(e.getKeyCode()){
-                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_A:
                     direction = 'L';
                     break;
-                case KeyEvent.VK_RIGHT:
+                case KeyEvent.VK_D:
                     direction = 'R';
                     break;
-                case KeyEvent.VK_UP:
+                case KeyEvent.VK_W:
                     direction = 'U';
                     break;
-                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_S:
                     direction = 'D';
                     break;
             }
         }
         public void keyReleased(KeyEvent e){
             switch(e.getKeyCode()){
-                case KeyEvent.VK_LEFT:
-                case KeyEvent.VK_RIGHT:
-                case KeyEvent.VK_UP:
-                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_A:
+                case KeyEvent.VK_D:
+                case KeyEvent.VK_W:
+                case KeyEvent.VK_S:
                     direction = 'N';
                     break;
             }
         }
     }
 
-    public void generateTerrain(){
-
+    public void generateEncounter(){
+        encounterX = random.nextInt(SCREEN_WIDTH/UNIT_SIZE)*UNIT_SIZE;
+        encounterY = random.nextInt(SCREEN_HEIGHT/UNIT_SIZE)*UNIT_SIZE;
     }
 
+    public void checkEncounter() throws InterruptedException {
+        if ((x == encounterX) && (y == encounterY)) {
+            new CombatFrame();
+            boolean combatRunning = true;
+            direction = 'N';
+            generateEncounter();
+            }
+        }
     public void collisionCheck(){
         // checks if touches left border.
         if(x<0){
