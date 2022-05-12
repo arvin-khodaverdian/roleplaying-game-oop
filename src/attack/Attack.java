@@ -102,6 +102,8 @@ public class Attack {
 			}
 			
 		}
+		initialized = true;
+		this.remove();
 	}
 	
 	/** removes the object after it is used */
@@ -113,6 +115,31 @@ public class Attack {
 			
 		}
 			
+	}
+	
+	public boolean isLight() {
+		if(this.type.equals(Type.LIGHT))
+			return true;
+		else
+			return false;
+	}
+	public boolean isHeavy() {
+		if(this.type.equals(Type.HEAVY))
+			return true;
+		else
+			return false;
+	}
+	public boolean isSpecial() {
+		if(this.type.equals(Type.SPECIAL))
+			return true;
+		else
+			return false;
+	}
+	public boolean isSupply() {
+		if(this.type.equals(Type.SUPPLY))
+			return true;
+		else
+			return false;
 	}
 
 	
